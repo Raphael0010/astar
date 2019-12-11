@@ -34,40 +34,24 @@ class PriorityQueue(object):
 
 
 class Node:
-    def __init__(self, x, y, cost, heuristic, nodeParent):
+    def __init__(self, x, y, value, nodeParent):
         self.x = x
         self.y = y
-        self.cost = cost
-        self.heuristic = heuristic
+        self.cost = 0
+        self.heuristic = 0
+        self.value = value
         self.nodeParent = nodeParent
 
     def showYou(self):
         current = self.nodeParent
-        p = "-> {},{} \n".format(self.x, self.y)
+        p = "-> {},{} \n".format(self.y, self.x)
         while(current != None):
-            p += "-> {},{}\n".format(current.x, current.y)
+            p += "-> {},{}\n".format(current.y, current.x)
             current = current.nodeParent
         return p
 
-
-def reduce(function, iterable, initializer=None):
-    it = iter(iterable)
-    if initializer is None:
-        try:
-            initializer = next(it)
-        except StopIteration:
-            raise TypeError('reduce() of empty sequence with no initial value')
-    accum_value = initializer
-    for x in it:
-        accum_value = function(accum_value, x)
-    return accum_value
-
-
-def access(obj, indexes):
-    try:
-        return reduce(list.__getitem__, indexes, obj)
-    except Exception:
-        return None
+    def getValue(self):
+        return self.value
 
 
 def findNeighbours(node: Node, graph: List[List[Node]]):
@@ -75,19 +59,32 @@ def findNeighbours(node: Node, graph: List[List[Node]]):
     column = node.x
     neighbours = []
 
-    if(access(graph, (row+1, column)) != None):
-        neighbours.append(graph[row+1][column])
+    # len(graph) -1 = only avaible if graph is a square
 
-    if(access(graph, (row, column+1)) != None):
-        neighbours.append(graph[row][column + 1])
+    if(row + 1 >= 0 and row + 1 <= (len(graph)-1)):
+        if(graph[row+1][column].value != 0):
+            neighbours.append(graph[row+1][column])
 
-    if(access(graph, (row - 1, column)) != None):
-        neighbours.append(graph[row - 1][column])
+    if(column + 1 >= 0 and column + 1 <= (len(graph)-1)):
+        if(graph[row][column + 1].value != 0):
+            neighbours.append(graph[row][column + 1])
 
-    if(access(graph, (row, column - 1)) != None):
-        neighbours.append(graph[row][column - 1])
+    if(row - 1 >= 0 and row - 1 <= (len(graph)-1)):
+        if(graph[row - 1][column].value != 0):
+            neighbours.append(graph[row - 1][column])
+
+    if(column - 1 >= 0 and column - 1 <= (len(graph)-1)):
+        if(graph[row][column - 1].value != 0):
+            neighbours.append(graph[row][column - 1])
 
     return neighbours
+
+
+def ifExist(graph, node):
+    for v in graph:
+        if(v == node):
+            return v.cost
+    return 999
 
 
 def shortestPath(graph: List[List[Node]], depart: Node, arriver: Node):
@@ -103,27 +100,31 @@ def shortestPath(graph: List[List[Node]], depart: Node, arriver: Node):
 
         neighbours = findNeighbours(current, graph)
         for v in neighbours:
-            result = (elem if elem.x == v.x and elem.y == v.y else None
-                      for elem in openList.queue)
-            if(v in closeList or any(elem != None and elem.cost < v.cost for elem in result)):
+            if(v in closeList or ifExist(openList.queue, v) < v.cost):
                 continue
             else:
-                v.cost = current.cost + 1
+                v.cost = current.cost + current.value
                 v.heuristic = v.cost + \
                     (abs(v.x - arriver.x) + abs(v.y - arriver.y))
                 v.nodeParent = current
                 openList.insert(v)
         closeList.append(current)
 
+# 0 wall, the algo pref go the < value
+
 
 if __name__ == "__main__":
-    array = [[0, 0, 0, 0],
-             [0, 0, 0, 0],
-             [0, 0, 0, 0],
-             [0, 0, 0, 0]]
 
-    for y in range(0, 4):
-        for x in range(0, 4):
-            array[y][x] = Node(x, y, array[y][x], 0, None)
+    array = [[1, 0, 1, 1, 1],
+             [1, 1, 1, 5, 1],
+             [1, 0, 0, 1, 1],
+             [1, 0, 1, 3, 2],
+             [1, 0, 1, 1, 1]]
 
-    print(shortestPath(array, array[0][1], array[3][3]).showYou())
+    for y in range(0, 5):
+        for x in range(0, 5):
+            array[y][x] = Node(x, y, array[y][x], None)
+
+    print(shortestPath(array, array[4][4], array[4][0]).showYou())
+
+# array = [y][x] then [row][col]
