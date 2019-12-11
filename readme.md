@@ -24,7 +24,8 @@ It's based on the cost of the path and an estimate of the cost required to exten
 
 =
 
-img
+
+<img src="https://github.com/Raphael0010/astar/blob/master/img/path.png?raw=true" data-canonical-src="https://gyazo.com/eb5c5741b6a9a16c692170a41a49c858.png" width="250" height="250" />
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
