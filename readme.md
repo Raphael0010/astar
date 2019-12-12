@@ -10,8 +10,8 @@ It's based on the cost of the path and an estimate of the cost required to exten
 ```bash
  array = [[1, 0, 1, 1, 1],
          [1, 1, 1, 5, 1],
-         [1, 0, 0, 1, 1],
-         [1, 0, 1, 3, 2],
+         [1, 0, 0, 3, 2],
+         [1, 0, 1, 1, 1],
          [1, 0, 1, 1, 1]]
 ```
 =
